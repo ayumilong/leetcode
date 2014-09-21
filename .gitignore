@@ -26,3 +26,8 @@
 *.exe
 *.out
 *.app
+run
+
+# Swap file
+*.swp
+
