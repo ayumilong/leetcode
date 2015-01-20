@@ -8,47 +8,67 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
 
 class Solution {
+private:
+	struct Position{
+		int x;
+		int y;
+		Position(int x, int y): x(x), y(y) {}
+	};
+
 public:
     void solve(std::vector<std::vector<char> > &board) {
-		int rows = board.size();
-		if(rows < 3){//For 0, 1 and 2 rows, nothing should be done
-			int columns = board[0].size();
-			std::vector<std::vector<bool> > isVisited(rows, std::vector<bool>(columns, false));
-			for(int i = 1; i < rows - 1; ++i){
-				for(int j = 1; j < columns - 1; ++j){
-					if(board[i][j] == 'o' && not isVisited[i][j]){
-						isVisited[i][j] = true;
-						if(board[i][j - 1] == 'o' || board[i - 1][j] == 'o'){
-							for(int k = j + 1; k < columns - 1; ++k){//Process this row
-								if(board[i][k] == 'x'){
-									j = k + 1; //Skip the consecutive 'o's
-									break;
-								}
-								for(int l = i + 1; l < rows - 1; ++l){//Process this column
-									if(board[l][k] == 'x'){
-										break;
-									}
-									isVisited[l][k] = true;
-								}
-								isVisited[i][k] = true;
-							}
+		int row = board.size();
+		if(row == 0){
+			return;
+		}
+		int col = board[0].size();
+		for(int i = 0; i < row; ++i){
+			for(int j = 0; j < col; ++j){
+				//Only deal with the edge of the board
+				if(i != 0 && j != 0 && i != row - 1 && j != col - 1){
+					continue;
+				}
+				if(board[i][j] == 'O'){
+					std::queue<Position> poses;
+					board[i][j] = 'Y';
+					poses.push(Position(i, j));
+					while(not poses.empty()){
+						int x = poses.front().x;
+						int y = poses.front().y;
+						poses.pop();
+						//Go up
+						if(x - 1 >= 0 && board[x - 1][y] == 'O'){
+							board[x - 1][y] = 'Y';
+							poses.push(Position(x - 1, y));
 						}
-					}else{ //board[i][j - 1] = 'x' && board[i - 1][j - 1] = 'x'
-						bool isSurrounded = true;
-						int m = j + 1;
-						for(m = j + 1; m < columns; ++m){
-							if(board[i][m] == 'x'){
-								break;
-							}else if(board[i - 1][m] == 'o'){
-								isSurrounded = false;
-								break;
-							}
-							isVisited[i][m] = true;
+						//Go down
+						if(x + 1 < row && board[x + 1][y] == 'O'){
+							board[x + 1][y] = 'Y';
+							poses.push(Position(x + 1, y));
 						}
-						int n = i;
+						//Go left
+						if(y - 1 >= 0 && board[x][y - 1] == 'O'){
+							board[x][y - 1] = 'Y';
+							poses.push(Position(x, y - 1));
+						}
+						//Go right
+						if(y + 1 < col && board[x][y + 1] == 'O'){
+							board[x][y + 1] = 'Y';
+							poses.push(Position(x, y + 1));
+						}
 					}
+				}
+			}
+		}
+		for(int i = 0; i < row; ++i){
+			for(int j = 0; j < col; ++j){
+				if(board[i][j] == 'O'){
+					board[i][j] = 'X';
+				}else if(board[i][j] == 'Y'){
+					board[i][j] = 'O';
 				}
 			}
 		}
@@ -56,5 +76,12 @@ public:
 };
 
 int main(){
+	std::vector<std::vector<char> > board;
+	std::vector<char> row1(2, 'O');
+	std::vector<char> row2(2, 'O');
+	board.push_back(row1);
+	board.push_back(row2);
+	Solution s;
+	s.solve(board);
 	return 0;
 }

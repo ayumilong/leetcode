@@ -57,14 +57,17 @@ public:
 
 	void findAndSwap(std::vector<int>& num, int start){
 		int len = num.size();
-		for(int i = len - 1; i > start; --i){
+		int minPos = start + 1; 
+		for(int i = start + 2; i < len; ++i){
 			if(num[i] > num[start]){
-				int tmp = num[i];
-				num[i] = num[start];
-				num[start] = tmp;
+				minPos = i;
+			}else{
 				break;
 			}
 		}
+		int tmp = num[start];
+		num[start] = num[minPos];
+		num[minPos] = tmp;
 	}
 
     void nextPermutation(std::vector<int>& num) {

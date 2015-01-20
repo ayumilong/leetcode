@@ -19,19 +19,38 @@ struct TreeNode {
 
 class Solution {
 public:
-	std::vector<int> postorderTraversal(TreeNode *root){ //Recursive version 
-		std::vector<int> tree;
-		if(root != NULL){
-			std::vector<int> temp = postorderTraversal(root -> left);
-			int len = temp.size();
-			tree.resize(len);
-			copy(temp.begin(), temp.end(), tree.begin());
-			temp = postorderTraversal(root -> right);
-			tree.resize(tree.size() + temp.size());
-			copy(temp.begin(), temp.end(), tree.begin() + len);
-			tree.push_back(root -> val);
+	std::vector<int> postorderTraversal(TreeNode *root){ 
+		std::vector<int> result;
+		if(root == NULL){
+			return result;
 		}
-		return tree;
+		std::stack<TreeNode*> nodes;
+		nodes.push(root);
+		TreeNode *cur = nodes.top();
+		while(cur -> left != NULL){//Get to the leftmost node
+			nodes.push(cur -> left);
+			cur = cur -> left;
+		}
+		TreeNode *preNode = NULL;
+		while(not nodes.empty()){
+			TreeNode *cur = nodes.top();
+			if(cur -> right == preNode){//Has processed both left and right child then process the current node
+				result.push_back(cur -> val);
+				preNode = nodes.top();
+				nodes.pop();
+			}else{//Process the right sub-tree
+				if(cur -> right != NULL){
+					nodes.push(cur -> right);
+					cur = nodes.top();
+					while(cur -> left != NULL){//Process the left sub-tree
+						nodes.push(cur -> left);
+						cur = cur -> left;
+					}
+				}
+				preNode = NULL;
+			}
+		}
+		return result;
     }
 };
 
@@ -78,9 +97,12 @@ public:
         return result;  
     }  
 };  
+
 int main(){
 	TreeNode *root = new TreeNode(3);
 	root -> left = new TreeNode(1);
+	root -> left -> right = new TreeNode(4);
+	root -> left -> right -> left = new TreeNode(5);
 	root -> right = new TreeNode(2);
 	Solution s;
 	std::vector<int> tree = s.postorderTraversal(root);
