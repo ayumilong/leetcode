@@ -1,3 +1,6 @@
+#Author: Yaolin Zhang
+#Copyright: 2013-2015
+
 CFLAGS = -g -W -Wall -Weffc++ -Wextra -pedantic -O0
 VFLAGS = --leak-cheak=full --show-reachable=yes
 
